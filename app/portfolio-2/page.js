@@ -8,16 +8,16 @@ import Link from 'next/link';
 
 const portfolioItems = [
     { id: 1, img: "/img/portfolio/9.png", title: "Zap Dashboard", url: "https://zap-dashboard-woad.vercel.app/"  },
+    { id: 2, img: "/img/portfolio/7.png", title: "VMManager", url: "https://vmmanager.netlify.app" },
 ];
 
 const Index = () => {
 	const { banner_image_function, page_info_function } = useContext(context);
     useEffect(() => {
-        banner_image_function("/img/banner3.png");
+        banner_image_function("/img/banner2.png");
         page_info_function("Recent projects", "portfolio", "portfolio");
         
         Fancybox.bind("[data-fancybox]", {
-            // Your custom options
         });
 
         return () => {
@@ -25,12 +25,13 @@ const Index = () => {
         };
     }, []);
 
-	const handleItemClick = (url) => {
+    const handleItemClick = (url) => {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
-	
+
     return (
         <Layout>
+        <div className="row">
            {portfolioItems.map((item) => (
                     <div className="col-lg-6" key={item.id}>
                         <div 
@@ -46,13 +47,14 @@ const Index = () => {
                             <div className="trm-item-description">
                                 <h6>{item.title}</h6>
                                 <div className="trm-zoom-icon" onClick={(e) => e.stopPropagation()}>
-                                    <a
-                                        data-fancybox="portfolio"
-                                        data-src={item.img}
-                                        href="javascript:;"
-                                    >
-                                        <i className="fas fa-search-plus" />
-                                    </a>
+                                <a
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleItemClick(item.url);
+                                    }}
+                                >
+                                    <i className="fas fa-eye" />
+                                </a>
                                 </div>
                                 <div className="trm-zoom-icon" onClick={(e) => {
                                     e.stopPropagation();
@@ -67,15 +69,14 @@ const Index = () => {
                     </div>
                 ))}
             <div className="col-lg-12 mt-5">
-                <div className="d-flex justify-content-end">
-                    <Link href="/portfolio" passHref>
-                        <a className="icon-circle pulse-effect mb-2">
-                            <i className="fas fa-arrow-left"></i>
-                        </a>
-                    </Link>
-                </div>
-            </div>
-        </Layout>
-    );
+        <div className="d-flex justify-content-end">
+          <Link href="/portfolio" className="icon-circle pulse-effect mb-2">
+            <i className="fas fa-arrow-left"></i>
+          </Link>
+        </div>
+      </div>
+      </div>
+    </Layout>
+  );
 };
 export default Index;

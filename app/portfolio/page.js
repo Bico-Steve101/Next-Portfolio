@@ -22,7 +22,6 @@ const Index = () => {
         page_info_function("Recent projects", "portfolio", "portfolio");
         
         Fancybox.bind("[data-fancybox]", {
-            // Your custom options
         });
 
         return () => {
@@ -52,13 +51,14 @@ const Index = () => {
                             <div className="trm-item-description">
                                 <h6>{item.title}</h6>
                                 <div className="trm-zoom-icon" onClick={(e) => e.stopPropagation()}>
-                                    <a
-                                        data-fancybox="portfolio"
-                                        data-src={item.img}
-                                        href="javascript:;"
-                                    >
-                                        <i className="fas fa-search-plus" />
-                                    </a>
+                                <a
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleItemClick(item.url);
+                                    }}
+                                >
+                                    <i className="fas fa-eye" />
+                                </a>
                                 </div>
                                 <div className="trm-zoom-icon" onClick={(e) => {
                                     e.stopPropagation();
@@ -72,17 +72,17 @@ const Index = () => {
                         </div>
                     </div>
                 ))}
-                <div className="col-lg-12 mt-5">
-                    <div className=" d-flex justify-content-end">
-                        <Link href="/portfolio-2" passHref>
-                            <a className="icon-circle pulse-effect mb-2">
-                                <i className="fas fa-arrow-right"></i>
-                            </a>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </Layout>
-    );
+               <div className="col-lg-12 mt-5">
+          <div className=" d-flex justify-content-end">
+            <Link href="/portfolio-2" className="icon-circle pulse-effect mb-2">
+              <i className="fas fa-arrow-right"></i>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
 };
+
+
 export default Index;

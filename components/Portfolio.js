@@ -1,7 +1,11 @@
-import React from 'react';
-import { Fancybox } from "@fancyapps/ui";
-import "@fancyapps/ui/dist/fancybox/fancybox.css";
+"use client";
+import { useContext, useEffect, useState } from "react";
+import { context } from "@/context/context";
+import Layout from "@/layout/Layout";
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const Fancybox = dynamic(() => import('@fancyapps/ui').then((mod) => mod.Fancybox), { ssr: false });
 
 const portfolioItems = [
     { id: 1, img: "/img/portfolio/1.png", title: "Zap Secure", url: "https://zap-six-rho.vercel.app/" },
@@ -13,13 +17,22 @@ const portfolioItems = [
 ];
 
 const Portfolio = () => {
-    React.useEffect(() => {
-        Fancybox.bind("[data-fancybox]", {
-            // Your custom options
-        });
+    const { banner_image_function, page_info_function } = useContext(context);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+        banner_image_function("/img/banner2.png");
+        page_info_function("Recent projects", "portfolio", "portfolio");
+        
+        if (typeof window !== 'undefined') {
+            Fancybox.bind("[data-fancybox]", {});
+        }
 
         return () => {
-            Fancybox.destroy();
+            if (typeof window !== 'undefined') {
+                Fancybox.unbind("[data-fancybox]");
+            }
         };
     }, []);
 
@@ -27,64 +40,28 @@ const Portfolio = () => {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
-    return (
-        <div className="row">
-            <div className="col-lg-12">
-                <h5 className="trm-mb-40 trm-title-with-divider">
-                    Portfolio <span data-number={6} />
-                </h5>
-            </div>
+    if (!isMounted) {
+        return <div>Loading...</div>; // or a more sophisticated loading component
+    }
 
-            {portfolioItems.map((item) => (
-                <div className="col-lg-6" key={item.id}>
-                    <div 
-                        className="trm-portfolio-item trm-scroll-animation" 
-                        data-scroll 
-                        data-scroll-offset={40}
-                        onClick={() => handleItemClick(item.url)}
-                    >
-                        <div className="trm-cover-frame">
-                            <img className="trm-cover" src={item.img} alt={item.title} />
-                        </div>
-                        <div className="trm-item-description">
-                            <h6>{item.title}</h6>
-                            <div className="trm-zoom-icon" onClick={(e) => e.stopPropagation()}>
-                                <a
-                                    data-fancybox="portfolio"
-                                    data-src={item.img}
-                                    href="javascript:;"
-                                >
-                                    <i className="fas fa-search-plus" />
-                                </a>
-                            </div>
-                            <div className="trm-zoom-icon" onClick={(e) => {
-                                e.stopPropagation();
-                                handleItemClick(item.url);
-                            }}>
-								<a>
-                                <i className="fas fa-eye" />
-								</a>
-                            </div>
-                        </div>
+    return (
+        <Layout>
+            <div className="row">
+                {portfolioItems.map((item) => (
+                    <PortfolioItem key={item.id} item={item} handleItemClick={handleItemClick} />
+                ))}
+                <div className="col-lg-12 mt-5">
+                    <div className="d-flex justify-content-between align-items-center">
+                        <Link href="/portfolio-2" className="icon-circle pulse-effect mb-2">
+                            <i className="fas fa-arrow-right"></i>
+                        </Link>
+                        <Link href="/portfolio" className="icon-circle pulse-effect mb-2">
+                            <i className="fas fa-home"></i>
+                        </Link>
                     </div>
                 </div>
-            ))}
-
-            <div className="col-lg-12 mt-5">
-                <div className="d-flex justify-content-between align-items-center">
-                    <Link href="/portfolio-2" passHref>
-                        <a className="icon-circle pulse-effect mb-2">
-                            <i className="fas fa-arrow-right"></i>
-                        </a>
-                    </Link>
-                    <Link href="/portfolio" passHref>
-                        <a className="icon-circle pulse-effect mb-2">
-                            <i className="fas fa-home"></i>
-                        </a>
-                    </Link>
-                </div>
             </div>
-        </div>
+        </Layout>
     );
 };
 
